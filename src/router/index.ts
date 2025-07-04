@@ -1,16 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { House, Menu, Setting, ChatDotSquare } from '@element-plus/icons-vue'
 
 const routes = [
   {
     path: '/',
     name: 'Homepage',
-    meta: { title: '首页' },
+    meta: { title: '首页', icon: House },
     component: () => import('@/views/index.vue'),
   },
   {
     path: '/components',
     name: 'Components',
-    meta: { title: '组件' },
+    meta: { title: '组件', icon: Menu },
     children: [
       {
         path: 'pagination',
@@ -24,12 +25,18 @@ const routes = [
         meta: { title: '文件下载组件' },
         component: () => import('@/views/comps/download/index.vue'),
       },
+      {
+        path: 'chart',
+        name: 'Chart',
+        meta: { title: '图表' },
+        component: () => import('@/views/comps/download/index.vue'),
+      },
     ],
   },
   {
     path: '/solution',
     name: 'Solution',
-    meta: { title: '解决方案' },
+    meta: { title: '解决方案', icon: ChatDotSquare },
     children: [
       {
         path: 'pagination',
@@ -48,7 +55,7 @@ const routes = [
   {
     path: '/tools',
     name: 'Components',
-    meta: { title: '工具方法' },
+    meta: { title: '工具方法', icon: Setting },
     children: [
       {
         path: 'pagination',

@@ -21,6 +21,12 @@ const routes = [
         component: () => import('@/views/comps/layer/index.vue'),
       },
       {
+        path: 'file',
+        name: 'File',
+        meta: { title: '文件操作组件' },
+        component: () => import('@/views/comps/file/index.vue'),
+      },
+      {
         path: 'pagination',
         name: 'Pagination',
         meta: { title: '分页组件' },

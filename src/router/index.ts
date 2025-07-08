@@ -9,10 +9,17 @@ const routes = [
     component: () => import('@/views/index.vue'),
   },
   {
-    path: '/components',
+    path: '/comps',
     name: 'Components',
     meta: { title: '组件', icon: Menu },
+    component: () => import('@/views/comps/index.vue'),
     children: [
+      {
+        path: 'layer',
+        name: 'Layer',
+        meta: { title: '弹出层展示组件' },
+        component: () => import('@/views/comps/layer/index.vue'),
+      },
       {
         path: 'pagination',
         name: 'Pagination',
@@ -54,7 +61,7 @@ const routes = [
   },
   {
     path: '/tools',
-    name: 'Components',
+    name: 'Tools',
     meta: { title: '工具方法', icon: Setting },
     children: [
       {

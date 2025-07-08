@@ -1,8 +1,9 @@
 <script setup>
-import { RouterView, useRouter } from 'vue-router'
+import { RouterView, useRoute, useRouter } from 'vue-router'
 import { computed } from 'vue'
 import { Setting } from '@element-plus/icons-vue'
 
+const route = useRoute()
 const router = useRouter()
 
 // 获取路由配置
@@ -15,7 +16,7 @@ const routes = computed(() => {
 <template>
   <div id="app">
     <aside class="w-[240px]">
-      <el-menu router default-active="/" class="sidebar" unique-opened>
+      <el-menu router :default-active="route.path" class="sidebar" unique-opened>
         <template v-for="route in routes" :key="route.path">
           <el-sub-menu v-if="route.children" :index="route.path">
             <template #title>
@@ -45,7 +46,7 @@ const routes = computed(() => {
       </el-menu>
     </aside>
 
-    <main>
+    <main class="flex-1 p-2.5">
       <RouterView />
     </main>
   </div>

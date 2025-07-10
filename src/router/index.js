@@ -58,10 +58,10 @@ const routes = [
     meta: { title: '解决方案', icon: ChatDotSquare },
     children: [
       {
-        path: 'pagination',
-        name: 'Pagination',
-        meta: { title: '步骤' },
-        component: () => import('@/views/comps/pagination/index.vue'),
+        path: 'table',
+        name: 'TableSearch',
+        meta: { title: '数据表格综合应用' },
+        component: () => import('@/views/solution/table/index.vue'),
       },
       {
         path: 'download',

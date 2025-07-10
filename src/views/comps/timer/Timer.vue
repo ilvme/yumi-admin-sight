@@ -4,25 +4,68 @@ import { ref, useTemplateRef } from 'vue'
 defineOptions({ name: 'SimpleTimer' })
 
 const timer = ref({
-  name: '',
+  name: 'task1',
   desc: '',
 
   isCycle: 1, // 1: 关闭, 2: 每天, 3: 每周, 4: 每月, 5: 自定义
 
   dayTypeTime: null, // 每天的时间
 
-  weekTypeWeeks: null, // 每周的星期
+  weekTypeWeeks: [], // 每周的星期
   weekTypeTime: null, // 每周的时间
 
-  monthTypeDays: null, // 每月的日期
+  monthTypeDays: [], // 每月的日期
   monthTypeTime: null, // 每月的时间
 
   cronExp: null, // cron 表达式
 })
 
+// 周期状态验证器
+const cycleValidator = (rule, value, callback) => {
+  if (!value) {
+    callback(new Error('请选择周期'))
+  }
+
+  //  每天，校验
+  if (timer.value.isCycle === 2 && !timer.value.dayTypeTime) {
+    callback(new Error('请选择每天时间'))
+  }
+
+  // 每周，校验
+  if (
+    timer.value.isCycle === 3 &&
+    (!timer.value.weekTypeTime || timer.value.weekTypeWeeks.length === 0)
+  ) {
+    callback(new Error('请选择每周时间'))
+  }
+
+  // 每月，校验
+  if (
+    timer.value.isCycle === 4 &&
+    (!timer.value.monthTypeTime || timer.value.monthTypeTime.length === 0)
+  ) {
+    callback(new Error('请设置时间或天'))
+  }
+
+  // cron 校验
+  if (timer.value.isCycle === 5) {
+    if (!timer.value.cronExp) {
+      callback(new Error('请填写 Cron'))
+    }
+
+    // 请求后端方法或调用后端接口校验 Cron 是否符合规范
+    // const valid = await reqCronValid(timer.value.cronExp)
+    // if (!valid) {
+    //   callback(new Error('Cron 格式不正确'))
+    // }
+  }
+
+  callback()
+}
+
 const rules = {
   name: [{ required: true, message: '请输入任务名称', trigger: 'blur' }],
-  desc: [{ required: false, message: '请输入任务描述', trigger: 'blur' }],
+  isCycle: [{ required: true, validator: cycleValidator, trigger: 'blur' }],
 }
 
 const timerDetailList = ref([])
@@ -30,16 +73,46 @@ const timerRef = useTemplateRef('timerRef')
 function onSave() {
   timerRef.value.validate((valid) => {
     if (valid) {
-      timerDetailList.value.push(`任务名称：${timer.value.name}`)
-      timerDetailList.value.push(`任务描述：${timer.value.desc}`)
-
-      // 构建
-      timerDetailList.value.push(`周期执行详情：xxxTODO`)
+      detailBuild()
     } else {
-      console.log('error submit!!')
       return false
     }
   })
+}
+
+// 周期类型变化，清除验证
+const handleCycleChange = () => {
+  timerRef.value.clearValidate()
+}
+
+// 构建输出
+function detailBuild() {
+  timerDetailList.value = []
+  timerDetailList.value.push(`任务名称：${timer.value.name}`)
+  timerDetailList.value.push(`任务描述：${timer.value.desc}`)
+
+  let cycleText = ''
+  switch (timer.value.isCycle) {
+    case 1:
+      cycleText = `未开启周期执行，需手动执行`
+      break
+    case 2:
+      cycleText = `周期类型：每天 ${timer.value.dayTypeTime}`
+      break
+    case 3:
+      cycleText = `周期类型：每周的星期 ${timer.value.weekTypeWeeks}，时间： ${timer.value.weekTypeTime}`
+      break
+    case 4:
+      cycleText = `周期类型：每月的第 ${timer.value.monthTypeDays} 天，时间为： ${timer.value.monthTypeTime}`
+      break
+    case 5:
+      cycleText = `周期类型：Cron ${timer.value.cronExp}`
+      break
+    default:
+      timerDetailList.value.push(`周期类型：自定义`)
+  }
+
+  timerDetailList.value.push(`周期状态：${cycleText}`)
 }
 </script>
 
@@ -64,8 +137,8 @@ function onSave() {
           style="width: 200px"
         />
       </el-form-item>
-      <el-form-item label="周期性配置" required>
-        <el-select v-model="timer.isCycle" style="width: 200px">
+      <el-form-item label="周期性配置" prop="isCycle" :inline-message="true">
+        <el-select v-model="timer.isCycle" style="width: 200px" @change="handleCycleChange">
           <el-option label="关闭" :value="1" />
           <el-option label="每天" :value="2" />
           <el-option label="每周" :value="3" />
@@ -121,7 +194,7 @@ function onSave() {
             <el-option v-for="i in 28" :label="i" :value="i" />
           </el-select>
           <el-time-picker
-            v-model="timer.weekTypeTime"
+            v-model="timer.monthTypeTime"
             placeholder="请选择时间"
             format="HH:mm"
             value-format="HH:mm"

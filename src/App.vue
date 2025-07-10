@@ -1,6 +1,7 @@
 <script setup>
 import { RouterView, useRoute, useRouter } from 'vue-router'
 import { computed, onBeforeUnmount, onMounted } from 'vue'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
 
 const route = useRoute()
 const router = useRouter()
@@ -33,42 +34,44 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div id="app">
-    <aside class="w-[240px]">
-      <el-menu router :default-active="route.path" class="sidebar" unique-opened>
-        <template v-for="route in routes" :key="route.path">
-          <el-sub-menu v-if="route.children" :index="route.path">
-            <template #title>
-              <el-icon v-if="route.meta.icon">
-                <component :is="route.meta.icon" />
-              </el-icon>
+  <el-config-provider size="default" :locale="zhCn">
+    <div id="app">
+      <aside class="w-[240px]">
+        <el-menu router :default-active="route.path" class="sidebar" unique-opened>
+          <template v-for="route in routes" :key="route.path">
+            <el-sub-menu v-if="route.children" :index="route.path">
+              <template #title>
+                <el-icon v-if="route.meta.icon">
+                  <component :is="route.meta.icon" />
+                </el-icon>
+                <span>{{ route.meta.title }}</span>
+              </template>
+
+              <!-- 二级菜单 -->
+              <template v-for="child in route.children" :key="child.path">
+                <el-menu-item
+                  v-if="!child.children || child.children.length === 0"
+                  :index="route.path + '/' + child.path"
+                >
+                  <el-icon v-if="child.meta.icon"><component :is="child.meta.icon" /></el-icon>
+                  <span>{{ child.meta.title }}</span>
+                </el-menu-item>
+              </template>
+            </el-sub-menu>
+
+            <el-menu-item v-else :index="route.path">
+              <el-icon v-if="route.meta.icon"><component :is="route.meta.icon" /></el-icon>
               <span>{{ route.meta.title }}</span>
-            </template>
+            </el-menu-item>
+          </template>
+        </el-menu>
+      </aside>
 
-            <!-- 二级菜单 -->
-            <template v-for="child in route.children" :key="child.path">
-              <el-menu-item
-                v-if="!child.children || child.children.length === 0"
-                :index="route.path + '/' + child.path"
-              >
-                <el-icon v-if="child.meta.icon"><component :is="child.meta.icon" /></el-icon>
-                <span>{{ child.meta.title }}</span>
-              </el-menu-item>
-            </template>
-          </el-sub-menu>
-
-          <el-menu-item v-else :index="route.path">
-            <el-icon v-if="route.meta.icon"><component :is="route.meta.icon" /></el-icon>
-            <span>{{ route.meta.title }}</span>
-          </el-menu-item>
-        </template>
-      </el-menu>
-    </aside>
-
-    <main class="flex-1 p-2.5">
-      <RouterView />
-    </main>
-  </div>
+      <main class="flex-1 p-2.5">
+        <RouterView />
+      </main>
+    </div>
+  </el-config-provider>
 </template>
 
 <style scoped>

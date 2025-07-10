@@ -168,27 +168,7 @@ const userList = [
 // 模拟异步查询请求，带分页参数，带搜索条件
 export function reqUserList(params) {
   let list = [...userList]
-  const { username, pageSize, pageNum, status, desc, createTimeList } = params
-
-  // if (username && username.trim().length > 0) {
-  //   list = list.filter((item) => item.username.includes(username))
-  // }
-  //
-  // if (status && [0, 1].includes(status)) {
-  //   list = list.filter((item) => item.status === status)
-  // }
-  // if (desc && desc.trim().length > 0) {
-  //   list = list.filter((item) => item.desc.includes(desc))
-  // }
-  //
-  // // 日期包含
-  // if (createTimeList && createTimeList.length === 2) {
-  //   list = list.filter(
-  //     (item) =>
-  //       dayjs(item.createTime).isAfter(createTimeList[0]) &&
-  //       dayjs(item.createTime).isBefore(createTimeList[1]),
-  //   )
-  // }
+  const { pageSize, pageNum } = params
 
   return new Promise((resolve) => {
     setTimeout(() => {

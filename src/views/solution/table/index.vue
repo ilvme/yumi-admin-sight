@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import SearchForm from '@/views/solution/table/components/SearchForm.vue'
+import TableRightToolbar from './components/RightToolbar.vue'
 import { reqUserList } from '@/api/user.js'
 
 const queryParams = ref({
@@ -88,17 +89,8 @@ const handlePageChange = (pageNum, pageSize) => {
     <el-button plain type="primary" icon="Plus">添加</el-button>
     <el-button plain type="danger" icon="Delete">删除</el-button>
 
-    <div class="right-toolbar">
-      <el-tooltip content="刷新">
-        <el-button plain circle icon="Refresh" @click="init" />
-      </el-tooltip>
-      <el-tooltip content="导出">
-        <el-button plain circle icon="Share" />
-      </el-tooltip>
-      <el-tooltip content="自定义列">
-        <el-button plain circle icon="Operation" />
-      </el-tooltip>
-    </div>
+    <!-- 表格操作 -->
+    <TableRightToolbar @refresh="init" />
   </section>
 
   <!-- 表格区域 -->
@@ -141,12 +133,4 @@ const handlePageChange = (pageNum, pageSize) => {
   />
 </template>
 
-<style scoped>
-.right-toolbar {
-  float: right;
-}
-.right-toolbar ::after {
-  content: '';
-  clear: both;
-}
-</style>
+<style scoped></style>

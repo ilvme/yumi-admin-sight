@@ -11,7 +11,7 @@ const queryParams = ref({
   desc: '', // 描述
   createTimeList: [], // 时间范围
   pageNum: 1,
-  pageSize: 5,
+  pageSize: 20,
 })
 
 const tableData = ref([])
@@ -102,7 +102,13 @@ const handlePageChange = (pageNum, pageSize) => {
   </section>
 
   <!-- 表格区域 -->
-  <el-table :data="tableData" border v-loading="loading" v-autoHeight style="width: 100%">
+  <el-table
+    :data="tableData"
+    border
+    v-loading="loading"
+    v-autoHeight="{ hasPagination: true }"
+    style="width: 100%"
+  >
     <el-table-column type="selection" width="50" />
     <el-table-column label="姓名" prop="username" min-width="100px" />
     <el-table-column label="状态" prop="status" min-width="80px">
@@ -129,7 +135,7 @@ const handlePageChange = (pageNum, pageSize) => {
     v-model:page-size="queryParams.pageSize"
     :total="total"
     :page-sizes="[5, 10, 20]"
-    style="margin-top: 10px"
+    style="margin-top: 10px; float: right"
     layout="total, sizes, prev, pager, next, jumper"
     @change="handlePageChange"
   />

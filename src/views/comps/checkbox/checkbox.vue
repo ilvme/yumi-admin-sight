@@ -55,22 +55,13 @@ defineExpose({ checkedList })
 </script>
 
 <template>
-  <el-card header="复选框组">
-    <el-checkbox
-      label="全选"
-      v-model="checkAll"
-      :indeterminate="isIndeterminate"
-      @change="handleCheckAllChange"
-    />
-    <el-divider />
-    <el-checkbox-group v-model="checkedList" @change="handleSingleChange">
-      <el-checkbox v-for="item in allList" :key="item.id" :value="item.id" :label="item.label" />
-    </el-checkbox-group>
-  </el-card>
+  <el-checkbox
+    label="全选"
+    v-model="checkAll"
+    :indeterminate="isIndeterminate"
+    @change="handleCheckAllChange"
+  />
+  <el-checkbox-group v-model="checkedList" @change="handleSingleChange">
+    <el-checkbox v-for="item in allList" :key="item.id" :value="item.id" :label="item.label" />
+  </el-checkbox-group>
 </template>
-
-<style scoped>
-.el-divider--horizontal {
-  margin: 10px 0;
-}
-</style>

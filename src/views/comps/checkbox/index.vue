@@ -14,7 +14,7 @@ const allList = [
   { id: 9, label: '大枣' },
   { id: 10, label: '杏子' },
 ]
-const checkedList = ref([1, 2])
+const checkedList = ref([])
 
 const cbRef = useTemplateRef('cbRef')
 
@@ -24,16 +24,21 @@ function getCheckedList() {
 </script>
 
 <template>
-  <el-card header="复选框组">
+  <el-card header="复选框组一">
     <CheckboxGroup :check-list="checkedList" :all-list="allList" ref="cbRef" />
 
-    <el-divider />
+    <p style="margin-top: 30px">
+      <span>你现在了哪些水果呢？</span>
+      <el-button type="primary" plain size="small" @click="getCheckedList">点我获取</el-button>
+    </p>
 
-    你现在了哪些水果呢？
-    <el-button type="primary" plain size="small" @click="getCheckedList">点我获取</el-button>
-    <li v-for="item in checkedList" :key="item" style="margin-right: 10px">
-      {{ allList.find((i) => i.id === item).label }}
-    </li>
+    <span v-if="allList.length === checkedList.length">你全都要！！！</span>
+    <span v-else-if="checkedList.length === 0">一个不要，啥也不是</span>
+    <template v-else>
+      <li v-for="item in checkedList" :key="item">
+        {{ allList.find((i) => i.id === item).label }}
+      </li>
+    </template>
   </el-card>
 </template>
 

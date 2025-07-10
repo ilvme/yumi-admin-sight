@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import SearchForm from '@/views/solution/table/components/SearchForm.vue'
 import TableRightToolbar from './components/RightToolbar.vue'
 import { reqUserList } from '@/api/user.js'
+import Pagination from '@/views/solution/table/components/Pagination.vue'
 
 const queryParams = ref({
   username: '', // 姓名
@@ -12,7 +13,7 @@ const queryParams = ref({
   desc: '', // 描述
   createTimeList: [], // 时间范围
   pageNum: 1,
-  pageSize: 20,
+  pageSize: 10,
 })
 
 const tableData = ref([])
@@ -43,16 +44,12 @@ const handleSearch = () => {
   // 请求后端，进行搜素
   init()
 }
-
-// 分页
-const handlePageChange = (pageNum, pageSize) => {
-  queryParams.value.pageNum = pageNum
-  queryParams.value.pageSize = pageSize
-  init()
-}
 </script>
 
 <template>
+  <el-alert style="margin-bottom: 10px" type="success" center>
+    特性支持：自适应表格高度、通用自定义操作、自定义高级搜索
+  </el-alert>
   <!-- 表单搜索区域 -->
   <SearchForm advanced :modalData="queryParams" @reset="handleReset" @search="handleSearch">
     <el-form-item label="姓名" prop="username">
@@ -116,14 +113,11 @@ const handlePageChange = (pageNum, pageSize) => {
   </el-table>
 
   <!-- 分页区域 -->
-  <el-pagination
-    v-model:current-page="queryParams.pageNum"
-    v-model:page-size="queryParams.pageSize"
+  <Pagination
     :total="total"
-    :page-sizes="[5, 10, 20]"
-    style="margin-top: 10px; float: right"
-    layout="total, sizes, prev, pager, next, jumper"
-    @change="handlePageChange"
+    v-model:page-num="queryParams.pageNum"
+    v-model:page-size="queryParams.pageSize"
+    @pagination="init"
   />
 </template>
 

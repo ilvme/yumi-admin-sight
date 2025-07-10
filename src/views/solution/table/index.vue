@@ -52,38 +52,36 @@ const handlePageChange = (pageNum, pageSize) => {
 </script>
 
 <template>
-  <el-card>
-    <!-- 表单搜索区域 -->
-    <SearchForm advanced :modalData="queryParams" @reset="handleReset" @search="handleSearch">
-      <el-form-item label="姓名" prop="username">
-        <el-input v-model="queryParams.username" clearable style="width: 200px" />
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" clearable style="width: 100px">
-          <el-option label="正常" :value="1" />
-          <el-option label="禁用" :value="2" />
-        </el-select>
+  <!-- 表单搜索区域 -->
+  <SearchForm advanced :modalData="queryParams" @reset="handleReset" @search="handleSearch">
+    <el-form-item label="姓名" prop="username">
+      <el-input v-model="queryParams.username" clearable style="width: 200px" />
+    </el-form-item>
+    <el-form-item label="状态" prop="status">
+      <el-select v-model="queryParams.status" clearable style="width: 100px">
+        <el-option label="正常" :value="1" />
+        <el-option label="禁用" :value="2" />
+      </el-select>
+    </el-form-item>
+
+    <template #advance>
+      <el-form-item label="描述" prop="desc">
+        <el-input v-model="queryParams.desc" clearable style="width: 200px" />
       </el-form-item>
 
-      <template #advance>
-        <el-form-item label="描述" prop="desc">
-          <el-input v-model="queryParams.desc" clearable style="width: 200px" />
-        </el-form-item>
-
-        <el-form-item label="创建时间" prop="createTimeList">
-          <el-date-picker
-            v-model="queryParams.createTimeList"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            value-format="yyyy-MM-dd"
-            style="width: 400px"
-          />
-        </el-form-item>
-      </template>
-    </SearchForm>
-  </el-card>
+      <el-form-item label="创建时间" prop="createTimeList">
+        <el-date-picker
+          v-model="queryParams.createTimeList"
+          type="daterange"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          value-format="yyyy-MM-dd"
+          style="width: 400px"
+        />
+      </el-form-item>
+    </template>
+  </SearchForm>
 
   <!-- 中间按钮区域 -->
   <section style="margin: 5px 0">
@@ -104,7 +102,7 @@ const handlePageChange = (pageNum, pageSize) => {
   </section>
 
   <!-- 表格区域 -->
-  <el-table :data="tableData" border v-loading="loading" v-autoHeight>
+  <el-table :data="tableData" border v-loading="loading" v-autoHeight style="width: 100%">
     <el-table-column type="selection" width="50" />
     <el-table-column label="姓名" prop="username" min-width="100px" />
     <el-table-column label="状态" prop="status" min-width="80px">
@@ -131,7 +129,7 @@ const handlePageChange = (pageNum, pageSize) => {
     v-model:page-size="queryParams.pageSize"
     :total="total"
     :page-sizes="[5, 10, 20]"
-    style="margin-top: 20px; text-align: right"
+    style="margin-top: 10px"
     layout="total, sizes, prev, pager, next, jumper"
     @change="handlePageChange"
   />

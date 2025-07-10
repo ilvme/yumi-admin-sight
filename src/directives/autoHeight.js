@@ -3,6 +3,10 @@
  */
 export default {
   mounted(el, binding, vnode) {
+    binding.value = binding.value || {
+      hasPagination: true,
+      hasBtn: false,
+    }
     calcHeight(el, binding, vnode)
 
     window.addEventListener('resize', () => {
@@ -31,6 +35,7 @@ export default {
 function calcHeight(el, binding, vnode) {
   // 获取表格到浏览器视窗上方的距离
   const { y } = el.getBoundingClientRect()
+  console.log('y', y)
 
   // 获取表格下方 DOM 结构所占高度
   const tableBottom = calcTableToBottom(binding.value)
@@ -46,16 +51,17 @@ function calcHeight(el, binding, vnode) {
 }
 
 function calcTableToBottom(bindings) {
-  // 无分页
-  if (bindings?.hasPagination === false) {
-    return 20
-  }
-
-  // 无按钮
-  if (bindings?.hasBtn === true) {
+  console.log('b', bindings)
+  // 有分页
+  if (bindings.hasPagination) {
     return 60
   }
 
+  // 有按钮
+  if (bindings.hasBtn) {
+    return 30
+  }
+
   // 无按钮且无分页
-  return 50
+  return 10
 }

@@ -10,6 +10,7 @@ import { createPinia } from 'pinia'
 
 import App from '@/App.vue'
 import router from '@/router/index.js'
+import installDirectives from '@/directives/index.js'
 
 const app = createApp(App)
 
@@ -18,6 +19,9 @@ app.use(router)
 app.use(ElementPlus)
 
 app.mount('#app')
+
+// 注册自定义指令
+installDirectives(app)
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, useTemplateRef } from 'vue'
+import { ref, useTemplateRef, watch } from 'vue'
 import { DArrowRight } from '@element-plus/icons-vue'
 import { ElCollapseTransition } from 'element-plus'
 
@@ -23,6 +23,11 @@ function onReset() {
   formRef.value.resetFields()
   emits('reset')
 }
+
+// 监听展开状态，触发 resize 事件，主要用于表格自适应高度
+watch(expanded, (val) => {
+  window.dispatchEvent(new Event('resize'))
+})
 </script>
 
 <template>
@@ -37,7 +42,7 @@ function onReset() {
       </ElCollapseTransition>
     </el-form>
 
-    <div>
+    <div style="min-width: 320px">
       <el-button plain type="primary" icon="Search" @click="$emit('search')">搜索</el-button>
       <el-button plain type="warning" icon="Refresh" @click="onReset">重置</el-button>
       <el-button plain v-if="advanced" @click="expanded = !expanded">

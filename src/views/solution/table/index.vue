@@ -32,12 +32,9 @@ async function init() {
 
 // 重置
 const handleReset = () => {
-  queryParams.value = {
-    username: '', // 姓名
-    status: '', // 状态
-    desc: '', // 描述
-    createTimeList: [], // 时间范围
-  }
+  // 如果有 el-form 无法自动重置的初始值，则需要手动初始化全选框的选中状态
+  // 注意：必须设定 el-form-item 的 prop 属性，且必须与表单数据对象中的属性名一致，否则不会生效
+  init()
 }
 
 // 搜索
@@ -58,10 +55,10 @@ const handlePageChange = (pageNum, pageSize) => {
   <el-card>
     <!-- 表单搜索区域 -->
     <SearchForm advanced :modalData="queryParams" @reset="handleReset" @search="handleSearch">
-      <el-form-item label="姓名">
+      <el-form-item label="姓名" prop="username">
         <el-input v-model="queryParams.username" clearable style="width: 200px" />
       </el-form-item>
-      <el-form-item label="状态">
+      <el-form-item label="状态" prop="status">
         <el-select v-model="queryParams.status" clearable style="width: 100px">
           <el-option label="正常" :value="1" />
           <el-option label="禁用" :value="2" />
@@ -69,11 +66,11 @@ const handlePageChange = (pageNum, pageSize) => {
       </el-form-item>
 
       <template #advance>
-        <el-form-item label="描述">
+        <el-form-item label="描述" prop="desc">
           <el-input v-model="queryParams.desc" clearable style="width: 200px" />
         </el-form-item>
 
-        <el-form-item label="创建时间">
+        <el-form-item label="创建时间" prop="createTimeList">
           <el-date-picker
             v-model="queryParams.createTimeList"
             type="daterange"
@@ -107,7 +104,7 @@ const handlePageChange = (pageNum, pageSize) => {
   </section>
 
   <!-- 表格区域 -->
-  <el-table :data="tableData" border v-loading="loading">
+  <el-table :data="tableData" border v-loading="loading" v-autoHeight>
     <el-table-column type="selection" width="50" />
     <el-table-column label="姓名" prop="username" min-width="100px" />
     <el-table-column label="状态" prop="status" min-width="80px">
@@ -133,7 +130,7 @@ const handlePageChange = (pageNum, pageSize) => {
     v-model:current-page="queryParams.pageNum"
     v-model:page-size="queryParams.pageSize"
     :total="total"
-    :page-sizes="[3, 5, 10, 20]"
+    :page-sizes="[5, 10, 20]"
     style="margin-top: 20px; text-align: right"
     layout="total, sizes, prev, pager, next, jumper"
     @change="handlePageChange"

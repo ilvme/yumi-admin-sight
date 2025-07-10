@@ -33,10 +33,10 @@ const routes = [
         component: () => import('@/views/comps/checkbox/index.vue'),
       },
       {
-        path: 'pagination',
-        name: 'Pagination',
-        meta: { title: '分页组件' },
-        component: () => import('@/views/comps/pagination/index.vue'),
+        path: 'timer',
+        name: 'Timer',
+        meta: { title: '定时配置组件' },
+        component: () => import('@/views/comps/timer/index.vue'),
       },
       {
         path: 'download',
@@ -80,7 +80,7 @@ const routes = [
         path: 'pagination',
         name: 'Pagination',
         meta: { title: '时间类' },
-        component: () => import('@/views/comps/pagination/index.vue'),
+        component: () => import('@/views/comps/timer/index.vue'),
       },
       {
         path: 'download',

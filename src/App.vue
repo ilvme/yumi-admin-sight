@@ -1,7 +1,6 @@
 <script setup>
 import { RouterView, useRoute, useRouter } from 'vue-router'
-import { computed } from 'vue'
-import { Setting } from '@element-plus/icons-vue'
+import { computed, onBeforeUnmount, onMounted } from 'vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -10,6 +9,26 @@ const router = useRouter()
 const routes = computed(() => {
   // 过滤掉不需要在菜单中显示的路由
   return router.options.routes.filter((route) => !route.hidden)
+})
+
+const isDev = import.meta.env.MODE === 'development'
+onMounted(() => {
+  // 非开发环境，添加网站离开提示
+  if (!isDev) {
+    window.addEventListener('beforeunload', (e) => {
+      e.preventDefault()
+      e.returnValue = ''
+    })
+  }
+})
+
+onBeforeUnmount(() => {
+  if (!isDev) {
+    window.removeEventListener('beforeunload', (e) => {
+      e.preventDefault()
+      e.returnValue = ''
+    })
+  }
 })
 </script>
 

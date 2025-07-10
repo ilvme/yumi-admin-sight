@@ -27,6 +27,12 @@ const routes = [
         component: () => import('@/views/comps/file/index.vue'),
       },
       {
+        path: 'checkbox',
+        name: 'Checkbox',
+        meta: { title: '复选框组件' },
+        component: () => import('@/views/comps/checkbox/index.vue'),
+      },
+      {
         path: 'pagination',
         name: 'Pagination',
         meta: { title: '分页组件' },

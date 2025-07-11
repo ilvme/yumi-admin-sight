@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { House, Menu, Setting, ChatDotSquare } from '@element-plus/icons-vue'
+import { House, Menu, Setting, Discount, Orange } from '@element-plus/icons-vue'
 
 const routes = [
   {
@@ -55,7 +55,7 @@ const routes = [
   {
     path: '/solution',
     name: 'Solution',
-    meta: { title: '解决方案', icon: ChatDotSquare },
+    meta: { title: '解决方案', icon: Orange },
     children: [
       {
         path: 'table',
@@ -74,7 +74,7 @@ const routes = [
   {
     path: '/tools',
     name: 'Tools',
-    meta: { title: '工具方法', icon: Setting },
+    meta: { title: '工具方法', icon: Discount },
     children: [
       {
         path: 'pagination',
@@ -89,6 +89,12 @@ const routes = [
         component: () => import('@/views/comps/download/index.vue'),
       },
     ],
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    meta: { title: '设置', icon: Setting },
+    component: () => import('@/views/settings/index.vue'),
   },
 ]
 

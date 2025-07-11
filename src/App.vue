@@ -2,6 +2,7 @@
 import { RouterView, useRoute, useRouter } from 'vue-router'
 import { computed, onBeforeUnmount, onMounted } from 'vue'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import { Setting, Sunny } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -36,7 +37,7 @@ onBeforeUnmount(() => {
 <template>
   <el-config-provider size="default" :locale="zhCn">
     <div id="app">
-      <aside class="w-[240px]">
+      <aside class="w-[240px] min-w-[240px]">
         <el-menu router :default-active="route.path" class="sidebar" unique-opened>
           <template v-for="route in routes" :key="route.path">
             <el-sub-menu v-if="route.children" :index="route.path">
@@ -66,7 +67,6 @@ onBeforeUnmount(() => {
           </template>
         </el-menu>
       </aside>
-
       <main class="flex-1 p-2.5">
         <RouterView />
       </main>

@@ -8,7 +8,7 @@ const emits = defineEmits(['click'])
 
 const props = defineProps({
   option: { type: Object, required: true },
-  height: { type: String, default: '300px' },
+  height: { type: String, default: '100%' },
   width: { type: String, default: '100%' },
   loading: { type: Boolean, default: false },
 })
@@ -36,7 +36,11 @@ function initChart() {
 
 function draw() {
   if (props.loading) {
-    chartInstance.value.showLoading()
+    chartInstance.value.showLoading('default', {
+      text: '加载中',
+      textStyle: { fontSize: 20 },
+      spinnerRadius: 20,
+    })
   } else {
     chartInstance.value.hideLoading()
     chartInstance.value.setOption(props.option, true)
@@ -75,12 +79,9 @@ defineExpose({ debounceResize })
 
 <template>
   <div
-    style="background-color: #fdf6f0"
+    style="border: 1px solid var(--el-border-color)"
     ref="chartRef"
-    :style="{
-      width: props.width ?? '100%',
-      height: props.height ?? '300%',
-    }"
+    :style="{ width: props.width, height: props.height }"
   />
 </template>
 

@@ -48,7 +48,7 @@ const routes = [
         path: 'chart',
         name: 'Chart',
         meta: { title: '图表' },
-        component: () => import('@/views/comps/download/index.vue'),
+        component: () => import('@/views/comps/chart/index.vue'),
       },
     ],
   },

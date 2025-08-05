@@ -167,8 +167,8 @@ function codeToPriv(code) {}
           </div>
 
           <div class="flex flex-col">
-            <el-checkbox true-label="1" false-label="0" label="create" />
-            <el-checkbox true-label="1" false-label="0" label="create" />
+            <el-checkbox true-value="1" false-value="0" label="create" />
+            <el-checkbox true-value="1" false-value="0" label="create" />
           </div>
         </div>
 
@@ -185,8 +185,8 @@ function codeToPriv(code) {}
           </div>
 
           <div class="flex flex-col">
-            <el-checkbox true-label="1" false-label="0" label="create" />
-            <el-checkbox true-label="1" false-label="0" label="create" />
+            <el-checkbox true-value="1" false-value="0" label="create" />
+            <el-checkbox true-value="1" false-value="0" label="create" />
           </div>
         </div>
 

@@ -25,6 +25,9 @@ const filterTableList = computed(() =>
   tableList.value.filter((item) => item.includes(filterTableText.value)),
 )
 
+const dbChangeCount = computed(() => grantStore.modifiedDbCacheKeys().length)
+const tableChangeCount = computed(() => grantStore.modifiedTableCacheKeys().length)
+
 // 权限
 const privBoxLoading = ref(false)
 const privilegesObj = ref({})
@@ -246,9 +249,9 @@ function reset() {
 
 <template>
   <el-card header="权限分配器">
-    <main class="flex gap-2 border-1 min-h-[300px]">
+    <main class="flex gap-2 border-1 min-h-[550px]" style="border-color: var(--el-border-color)">
       <!-- 库选择区域 -->
-      <section class="w-2/5 p-2 border-r">
+      <section class="w-3/8 p-2 border-r" style="border-color: var(--el-border-color)">
         <el-form-item label="数据库" size="small">
           <el-input suffix-icon="Search" v-model="filterDbText" />
         </el-form-item>
@@ -266,7 +269,7 @@ function reset() {
       </section>
 
       <!-- 表选择区域 -->
-      <section class="w-2/5 p-2 border-r">
+      <section class="w-3/8 p-2 border-r" style="border-color: var(--el-border-color)">
         <el-form-item label="表" size="small">
           <el-input suffix-icon="Search" />
         </el-form-item>
@@ -289,7 +292,7 @@ function reset() {
       </section>
 
       <!-- 权限操作区域 -->
-      <section class="w-1/5 p-2">
+      <section class="w-2/8 p-2">
         <!-- 表权限 -->
         <div v-if="currentClickType === 2 && !privBoxLoading">
           <div class="flex justify-between items-center">
@@ -490,7 +493,12 @@ function reset() {
       </section>
     </main>
 
-    <section>信息提示区域</section>
+    <section>
+      您已对
+      <span class="change-count">{{ dbChangeCount }}</span> 个库对象的权限进行了修改，
+      <span class="change-count">{{ tableChangeCount }}</span>
+      个表对象的权限进行了修改，点击下方确认按钮即可保存修改。
+    </section>
 
     <section class="flex justify-end gap-2 mt-2">
       <el-button type="success" @click="onResetPriv" :disabled="grantStore.privList.length === 0">

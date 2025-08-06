@@ -42,9 +42,20 @@ export function reqPrivilege(key) {
         code: 200,
         data: {
           key,
-          oldPrivCode: '0000000000',
-          newPrivCode: '0000000000',
+          oldPrivCode: '111110000000000000',
+          privCode: '111110000000000000',
         },
+      })
+    }, 500)
+  })
+}
+
+export function reqGrant(data) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        code: 200,
+        data,
       })
     }, 500)
   })

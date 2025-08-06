@@ -1,8 +1,9 @@
 <script setup>
 import { Coin, Document } from '@element-plus/icons-vue'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { DATABASE_PRIVILEGE_ALL, grantStore } from '@/views/solution/permission/grant.js'
-import { reqDbList, reqPrivilege, reqTableList } from '@/api/grant.js'
+import { reqDbList, reqPrivilege, reqTableList, reqGrant } from '@/api/grant.js'
+import { Layer, Toast } from '@/utils/layer.js'
 
 // 库
 const currentDbName = ref(DATABASE_PRIVILEGE_ALL)
@@ -27,7 +28,28 @@ const filterTableList = computed(() =>
 // 权限
 const privBoxLoading = ref(false)
 const privilegesObj = ref({})
-const privileges = ref({})
+const privileges = ref({
+  alterChecked: '0',
+  createChecked: '0',
+  createViewChecked: '0',
+  deleteChecked: '0',
+  dropChecked: '0',
+  grantOptionChecked: '0',
+  indexChecked: '0',
+  insertChecked: '0',
+  referencesChecked: '0',
+  selectChecked: '0',
+  showViewChecked: '0',
+  triggerChecked: '0',
+  updateChecked: '0',
+
+  alterRoutineChecked: '0',
+  createRoutineChecked: '0',
+  createTemporaryTablesChecked: '0',
+  executeChecked: '0',
+  fileChecked: '0',
+  lockTablesChecked: '0',
+})
 
 const ready = ref(false)
 onMounted(async () => {
@@ -38,6 +60,36 @@ onMounted(async () => {
 
   grantStore.initBaseData({})
 })
+
+onBeforeUnmount(() => {
+  reset()
+})
+
+const confirmLoading = ref(false)
+async function onConfirm() {
+  const data = grantStore.buildRes()
+  if (data.privList.length === 0) {
+    Toast.warning('您尚未进行任何权限分配')
+    return
+  }
+
+  confirmLoading.value = true
+  const res = await reqGrant(data)
+  Toast.success('')
+  confirmLoading.value = false
+}
+
+// 重置全部权限
+function onResetPriv() {
+  Layer.confirm('重置会将当前您已经配置但尚未保存的权限配置全部丢失，是否继续')
+    .then(() => {
+      grantStore.privList = []
+      codeToPriv(privilegesObj.value.oldPrivCode)
+    })
+    .catch(() => {
+      Toast.cancel()
+    })
+}
 
 const currentClickType = ref(1) // 1-db 2-table
 
@@ -77,7 +129,8 @@ async function onSelectTable(tableName) {
       }
     } else {
       // 否则请求接口
-      const data = await reqPrivilege({ key: cacheKey.value })
+      const { data } = await reqPrivilege({ key: cacheKey.value })
+      console.log('dddd', data)
       privilegesObj.value = data
       codeToPriv(data.privCode)
     }
@@ -105,7 +158,90 @@ function isChanged(type, val) {
   return false
 }
 
-function codeToPriv(code) {}
+function codeToPriv(code) {
+  const [
+    alterChecked,
+    createChecked,
+    createViewChecked,
+    deleteChecked,
+    dropChecked,
+    grantOptionChecked,
+    indexChecked,
+    insertChecked,
+    referencesChecked,
+    selectChecked,
+    showViewChecked,
+    triggerChecked,
+    updateChecked,
+    alterRoutineChecked,
+    createRoutineChecked,
+    createTemporaryTablesChecked,
+    executeChecked,
+    fileChecked,
+    lockTablesChecked,
+  ] = code
+
+  privileges.value.alterChecked = alterChecked
+  privileges.value.createChecked = createChecked
+  privileges.value.createViewChecked = createViewChecked
+  privileges.value.deleteChecked = deleteChecked
+  privileges.value.dropChecked = dropChecked
+  privileges.value.grantOptionChecked = grantOptionChecked
+  privileges.value.indexChecked = indexChecked
+  privileges.value.insertChecked = insertChecked
+  privileges.value.referencesChecked = referencesChecked
+  privileges.value.selectChecked = selectChecked
+  privileges.value.showViewChecked = showViewChecked
+  privileges.value.triggerChecked = triggerChecked
+  privileges.value.updateChecked = updateChecked
+  privileges.value.alterRoutineChecked = alterRoutineChecked
+  privileges.value.createRoutineChecked = createRoutineChecked
+  privileges.value.createTemporaryTablesChecked = createTemporaryTablesChecked
+  privileges.value.executeChecked = executeChecked
+  privileges.value.fileChecked = fileChecked
+  privileges.value.lockTablesChecked = lockTablesChecked
+}
+
+function handleChange() {
+  const privCode = Object.values(privileges.value).join('')
+
+  grantStore.updatePrivCache({
+    key: cacheKey.value,
+    privCode,
+    oldPrivCode: privilegesObj.value.oldPrivCode,
+  })
+}
+
+// 背景色运算
+function privStyle(index) {
+  const colorList = []
+  const privObj = grantStore.getCachePrivByKey(cacheKey.value)
+  if (!privObj) {
+    return 'inherit'
+  }
+
+  const { privCode } = privObj
+
+  // privCode 与 oldPrivCode 按位比较，如果相同，color 为 inherit。不同的话，privCode 的对应位为 1，则 color 为 绿色，否则为红色
+  for (let i = 0; i < privCode.length; i++) {
+    const oldItem = privilegesObj.value.oldPrivCode[i]
+    const newItem = privCode[i]
+
+    if (oldItem === newItem) {
+      colorList.push('inherit')
+    } else {
+      colorList.push(oldItem === '1' ? '#ff00001c' : '#0080001a')
+    }
+  }
+
+  return colorList[index]
+}
+
+function reset() {
+  grantStore.reset()
+  filterDbText.value = ''
+  filterTableText.value = ''
+}
 </script>
 
 <template>
@@ -167,8 +303,119 @@ function codeToPriv(code) {}
           </div>
 
           <div class="flex flex-col">
-            <el-checkbox true-value="1" false-value="0" label="create" />
-            <el-checkbox true-value="1" false-value="0" label="create" />
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="alter"
+              v-model="privileges.alterChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(0) }"
+            />
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="create"
+              v-model="privileges.createChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(1) }"
+            />
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="create View"
+              v-model="privileges.createViewChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(2) }"
+            />
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="delete"
+              v-model="privileges.deleteChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(3) }"
+            />
+
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="drop"
+              v-model="privileges.dropChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(4) }"
+            />
+
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="grant option"
+              v-model="privileges.grantOptionChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(5) }"
+            />
+
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="index"
+              v-model="privileges.indexChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(6) }"
+            />
+
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="insert"
+              v-model="privileges.insertChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(7) }"
+            />
+
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="references"
+              v-model="privileges.referencesChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(8) }"
+            />
+
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="select"
+              v-model="privileges.selectChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(9) }"
+            />
+
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="show view"
+              v-model="privileges.showViewChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(10) }"
+            />
+
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="trigger"
+              v-model="privileges.triggerChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(11) }"
+            />
+
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="update"
+              v-model="privileges.updateChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(12) }"
+            />
           </div>
         </div>
 
@@ -185,8 +432,54 @@ function codeToPriv(code) {}
           </div>
 
           <div class="flex flex-col">
-            <el-checkbox true-value="1" false-value="0" label="create" />
-            <el-checkbox true-value="1" false-value="0" label="create" />
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="alter routine"
+              v-model="privileges.alterRoutineChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(13) }"
+            />
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="create routine"
+              v-model="privileges.createRoutineChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(14) }"
+            />
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="create temporary tables"
+              v-model="privileges.createTemporaryTablesChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(15) }"
+            />
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="execute"
+              v-model="privileges.executeChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(16) }"
+            />
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="file"
+              v-model="privileges.fileChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(17) }"
+            />
+            <el-checkbox
+              true-value="1"
+              false-value="0"
+              label="lock tables"
+              v-model="privileges.lockTablesChecked"
+              @change="handleChange"
+              :style="{ backgroundColor: privStyle(18) }"
+            />
           </div>
         </div>
 
@@ -200,9 +493,10 @@ function codeToPriv(code) {}
     <section>信息提示区域</section>
 
     <section class="flex justify-end gap-2 mt-2">
-      <el-button>取消</el-button>
-      <el-button type="success">全部重置</el-button>
-      <el-button type="primary">确定</el-button>
+      <el-button type="success" @click="onResetPriv" :disabled="grantStore.privList.length === 0">
+        全部重置
+      </el-button>
+      <el-button type="primary" @click="onConfirm">确定</el-button>
     </section>
   </el-card>
 </template>

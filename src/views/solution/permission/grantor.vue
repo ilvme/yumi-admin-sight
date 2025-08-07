@@ -1,7 +1,11 @@
 <script setup>
 import { Coin, Document } from '@element-plus/icons-vue'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { DATABASE_PRIVILEGE_ALL, grantStore } from '@/views/solution/permission/grant.js'
+import {
+  DATABASE_PRIVILEGE_ALL,
+  grantStore,
+  PRIVILEGE_META,
+} from '@/views/solution/permission/grant.js'
 import { reqDbList, reqPrivilege, reqTableList, reqGrant } from '@/api/grant.js'
 import { Layer, Toast } from '@/utils/layer.js'
 
@@ -63,7 +67,6 @@ onMounted(async () => {
   ready.value = false
   const { data } = await reqDbList()
   dbList.value = data
-  console.log(data)
 
   grantStore.initBaseData({})
 })
@@ -81,9 +84,30 @@ async function onConfirm() {
   }
 
   confirmLoading.value = true
-  const res = await reqGrant(data)
-  Toast.success('')
+
+  const opInfo = sublimation(data)
+
+  await reqGrant(data)
+  Toast.success(opInfo)
   confirmLoading.value = false
+}
+
+function sublimation({ username, datasourceId, host, privList }) {
+  const opRes = { datasourceId, username, host, opList: [] }
+
+  privList.forEach(({ key, privCode, oldPrivCode }) => {
+    const op = { key, add: [], remove: [] }
+
+    for (let i = 0; i < privCode.length; i++) {
+      if (privCode[i] === oldPrivCode[i]) continue
+
+      privCode[i] === '1' ? op.add.push(PRIVILEGE_META[i]) : op.remove.push(PRIVILEGE_META[i])
+    }
+
+    opRes.opList.push(op)
+  })
+
+  return opRes
 }
 
 // 重置全部权限
@@ -137,7 +161,7 @@ async function onSelectTable(tableName) {
     } else {
       // 否则请求接口
       const { data } = await reqPrivilege({ key: cacheKey.value })
-      console.log('dddd', data)
+
       privilegesObj.value = data
       codeToPriv(data.privCode)
     }

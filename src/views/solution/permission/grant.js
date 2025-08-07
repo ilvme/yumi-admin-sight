@@ -2,6 +2,27 @@ import { reactive } from 'vue'
 
 export const DATABASE_PRIVILEGE_ALL = '%(ALL)'
 export const DATABASE_PRIVILEGE_KEY_SEPARATOR = '|'
+export const PRIVILEGE_META = [
+  'ALTER',
+  'CREATE',
+  'CREATE VIEW',
+  'DELETE',
+  'DROP',
+  'GRANT OPTION',
+  'INDEX',
+  'INSERT',
+  'REFERENCES',
+  'SELECT',
+  'SHOW VIEW',
+  'TRIGGER',
+  'UPDATE',
+  'ALTER ROUTINE',
+  'CREATE ROUTINE',
+  'CREATE TEMPORARY TABLES',
+  'EXECUTE',
+  'FILE',
+  'LOCK TABLES',
+]
 
 export const grantStore = reactive({
   datasourceId: undefined,
@@ -16,7 +37,7 @@ export const grantStore = reactive({
   },
 
   // 初始化值
-  initBaseData({ datasourceId, username, host }) {
+  initBaseData({ datasourceId = 2, username = 'zy1', host = 'ym_zy' }) {
     this.datasourceId = datasourceId
     this.username = username
     this.host = host

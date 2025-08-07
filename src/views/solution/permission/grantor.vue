@@ -28,6 +28,10 @@ const filterTableList = computed(() =>
 const dbChangeCount = computed(() => grantStore.modifiedDbCacheKeys().length)
 const tableChangeCount = computed(() => grantStore.modifiedTableCacheKeys().length)
 
+const tableType = computed(
+  () => currentClickType.value === 2 && currentTableName.value !== DATABASE_PRIVILEGE_ALL,
+)
+
 // 权限
 const privBoxLoading = ref(false)
 const privilegesObj = ref({})
@@ -240,10 +244,70 @@ function privStyle(index) {
   return colorList[index]
 }
 
+// 重置
 function reset() {
   grantStore.reset()
   filterDbText.value = ''
   filterTableText.value = ''
+}
+
+function toggleTablePrivChecked(val) {
+  privileges.value.alterChecked = val
+  privileges.value.createChecked = val
+  privileges.value.createViewChecked = val
+  privileges.value.deleteChecked = val
+  privileges.value.dropChecked = val
+  privileges.value.grantOptionChecked = val
+  privileges.value.indexChecked = val
+  privileges.value.insertChecked = val
+  privileges.value.referencesChecked = val
+  privileges.value.selectChecked = val
+  privileges.value.showViewChecked = val
+  privileges.value.triggerChecked = val
+  privileges.value.updateChecked = val
+
+  handleChange()
+}
+
+function resetTablePriv() {
+  const currentPrivObj = grantStore.getCachePrivByKey(cacheKey.value)
+  if (currentPrivObj) {
+    const otherPrivCode = currentPrivObj.privCode.slice(13)
+    const oldTablePrivCode = currentPrivObj.oldPrivCode.slice(0, 13)
+    const newCode = oldTablePrivCode + otherPrivCode
+    codeToPriv(newCode)
+    grantStore.updatePrivCache({
+      key: cacheKey.value,
+      privCode: newCode,
+      oldPrivCode: privilegesObj.value.oldPrivCode,
+    })
+  }
+}
+
+function toggleOtherPrivChecked(val) {
+  privileges.value.alterRoutineChecked = val
+  privileges.value.createRoutineChecked = val
+  privileges.value.createTemporaryTablesChecked = val
+  privileges.value.executeChecked = val
+  privileges.value.fileChecked = val
+  privileges.value.lockTablesChecked = val
+
+  handleChange()
+}
+
+function resetOtherPriv() {
+  const currentPrivObj = grantStore.getCachePrivByKey(cacheKey.value)
+  if (currentPrivObj) {
+    const tablePrivCode = currentPrivObj.privCode.slice(0, 13)
+    const oldOtherPrivCode = currentPrivObj.oldPrivCode.slice(13)
+    const newCode = tablePrivCode + oldOtherPrivCode
+    codeToPriv(newCode)
+    grantStore.updatePrivCache({
+      key: cacheKey.value,
+      privCode: newCode,
+      oldPrivCode: privilegesObj.value.oldPrivCode,
+    })
+  }
 }
 </script>
 
@@ -299,9 +363,13 @@ function reset() {
             <el-text size="small">基础权限</el-text>
 
             <div class="gap-1">
-              <el-button link type="primary">重置</el-button>
-              <el-button link type="primary">全选</el-button>
-              <el-button link type="primary">全不选</el-button>
+              <el-button size="small" link type="primary" @click="resetTablePriv">重置</el-button>
+              <el-button size="small" link type="primary" @click="toggleTablePrivChecked('1')">
+                全选
+              </el-button>
+              <el-button size="small" link type="primary" @click="toggleTablePrivChecked('0')">
+                全不选
+              </el-button>
             </div>
           </div>
 
@@ -428,9 +496,13 @@ function reset() {
             <el-text size="small">其他权限</el-text>
 
             <div class="gap-1">
-              <el-button link type="primary">重置</el-button>
-              <el-button link type="primary">全选</el-button>
-              <el-button link type="primary">全不选</el-button>
+              <el-button size="small" link type="primary" @click="resetOtherPriv">重置</el-button>
+              <el-button size="small" link type="primary" @click="toggleOtherPrivChecked('1')">
+                全选
+              </el-button>
+              <el-button size="small" link type="primary" @click="toggleOtherPrivChecked('0')">
+                全不选
+              </el-button>
             </div>
           </div>
 
@@ -441,6 +513,7 @@ function reset() {
               label="alter routine"
               v-model="privileges.alterRoutineChecked"
               @change="handleChange"
+              :disabled="tableType"
               :style="{ backgroundColor: privStyle(13) }"
             />
             <el-checkbox
@@ -449,6 +522,7 @@ function reset() {
               label="create routine"
               v-model="privileges.createRoutineChecked"
               @change="handleChange"
+              :disabled="tableType"
               :style="{ backgroundColor: privStyle(14) }"
             />
             <el-checkbox
@@ -457,6 +531,7 @@ function reset() {
               label="create temporary tables"
               v-model="privileges.createTemporaryTablesChecked"
               @change="handleChange"
+              :disabled="tableType"
               :style="{ backgroundColor: privStyle(15) }"
             />
             <el-checkbox
@@ -465,6 +540,7 @@ function reset() {
               label="execute"
               v-model="privileges.executeChecked"
               @change="handleChange"
+              :disabled="tableType"
               :style="{ backgroundColor: privStyle(16) }"
             />
             <el-checkbox
@@ -473,6 +549,7 @@ function reset() {
               label="file"
               v-model="privileges.fileChecked"
               @change="handleChange"
+              :disabled="tableType"
               :style="{ backgroundColor: privStyle(17) }"
             />
             <el-checkbox
@@ -481,6 +558,7 @@ function reset() {
               label="lock tables"
               v-model="privileges.lockTablesChecked"
               @change="handleChange"
+              :disabled="tableType"
               :style="{ backgroundColor: privStyle(18) }"
             />
           </div>

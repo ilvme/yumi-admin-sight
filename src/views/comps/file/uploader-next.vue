@@ -64,10 +64,10 @@ const filterValidFiles = (files, isFolder) => {
     // }
 
     // 2. 大小校验
-    if (file.size > maxSize) {
-      ElMessage.warning(`${file.name} 大小超过100MB，已过滤`)
-      continue
-    }
+    // if (file.size > maxSize) {
+    //   ElMessage.warning(`${file.name} 大小超过100MB，已过滤`)
+    //   continue
+    // }
 
     // 3. 构建合法文件对象
     newValidFiles.push({
